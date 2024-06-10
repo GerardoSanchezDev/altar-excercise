@@ -1,38 +1,86 @@
 <div class="container">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <button class="nav-link active" id="nav-grid-tab" data-bs-toggle="tab" data-bs-target="#nav-grid" type="button" role="tab" aria-controls="nav-grid" aria-selected="true">Grid Generator</button>
+          <button [disabled]="!generatorRunning" class="nav-link" id="nav-payment-tab" data-bs-toggle="tab" data-bs-target="#nav-payment" type="button" role="tab" aria-controls="nav-payment" aria-selected="false">Payment</button>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-grid" role="tabpanel" aria-labelledby="nav-grid-tab">
+            <div class="row mt-4 mb-4">
+                <div class="col-4 justify-content-start">
+                    <label for="">Character</label>
+                    <input type="text" placeholder="Character" [maxlength]="1" class="form-control" [formControl]="biasCharacter">
+                </div>
+                <div class="col-4 flex d-flex justify-content-center"></div>
+                <div class="col-4 flex d-flex justify-content-end">
+                    <button *ngIf="!generatorRunning" type="button" (click)="startGenerator()" class="btn btn-primary">
+                        Start Generator
+                    </button>
+                    <button *ngIf="generatorRunning" type="button" (click)="stopGenerator()" class="btn btn-primary">
+                        Stop Generator
+                    </button>
+                </div>
+            </div>
+            <div  class="container flex d-flex">
+                <div *ngFor="let i of mockArray" class="col" style="height: 100%;">
+                    <div *ngFor="let j of mockArray" class="cell">
+                        <ng-container *ngIf="grid$ | async">
+                            {{findGridItem(i,j)}}
+                        </ng-container>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="nav-payment" disa role="tabpanel" aria-labelledby="nav-payment-tab">
+        <form (ngSubmit)="sendPayment()" [formGroup]="formPayment">
+        <div class="row">
+            <div class="col-2">
+                <label class="form-label" for="name">Payment</label>
+                <input required type="text" class="form-control" id="name" formControlName="name">
+            </div>
+            <div class="col-2">
+                <label for="" class="form-label" for="amount">Amount</label>
+                <input required type="text" currencyMask class="form-control" id="amount" formControlName="amount">
+            </div>
+            <div class="col-2 align-bottom">
+                <label class="form-label">&nbsp;</label>
+                <button [disabled]="!formPayment.valid" type="submit" class="btn btn-primary form-control">+ ADD</button>
+            </div>     
+        </div>
+    </form>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Code</th>
+                    <th>Grid</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="payments$ | async">
+                <tr *ngFor="let payment of payments$ | async">
+                    <td>{{payment.name}}</td>
+                    <td>{{payment.amount | currency}}</td>
+                    <td>{{payment.code}}</td>
+                    <td>{{payment.grid.length}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="row mt-4 mb-4">
-        <div class="col-4 justify-content-start">
-            <label for="">Character</label>
-            <input type="text" placeholder="Character" [maxlength]="1" (change)="sendBias()" class="form-control" [formControl]="biasCharacter">
+        <div class="col flex d-flex justify-content-center">
+            <p [ngStyle]="{'color': (generatorRunning ? 'green' : 'red')}" style="color: green;">●</p>
+            &nbsp; Generator {{generatorRunning ? 'Live' : 'Stopped'}}
         </div>
-        <div class="col-4 flex d-flex justify-content-center"></div>
-        <div class="col-4 flex d-flex justify-content-end">
-            <button *ngIf="!generatorRunning" type="button" (click)="startGenerator()" class="btn btn-primary">
-                Start Generator
-            </button>
-            <button *ngIf="generatorRunning" type="button" (click)="stopGenerator()" class="btn btn-primary">
-                Stop Generator
-            </button>
+    </div>
+    <div *ngIf="grid$ | async" class="row mt-4 mb-4">
+        <div class="col flex d-flex justify-content-center">
+            YOUR CODE: {{data.secretCode}}
         </div>
     </div>
 </div>
-<div  class="container flex d-flex">
-    <div *ngFor="let i of mockArray" class="col" style="height: 100%;">
-        <div *ngFor="let j of mockArray" class="cell">
-            <ng-container *ngIf="grid$ | async">
-                {{findGridItem(i,j)}}
-            </ng-container>
-            
-        </div>
-    </div>
-</div>
-<div class="row mt-4 mb-4">
-    <div class="col flex d-flex justify-content-center">
-        <p [ngStyle]="{'color': (generatorRunning ? 'green' : 'red')}" style="color: green;">●</p>
-        {{generatorRunning ? 'Live' : 'Stopped'}}
-    </div>
-</div>
-<div *ngIf="grid$ | async" class="row mt-4 mb-4">
-    <div class="col flex d-flex justify-content-center">
-        YOUR CODE: {{data.secretCode}}
-    </div>
-</div>
+      
+    

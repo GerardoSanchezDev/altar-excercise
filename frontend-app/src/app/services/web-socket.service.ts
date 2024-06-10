@@ -17,6 +17,10 @@ export class WebSocketService {
     this.socket.emit('set-bias-character',{character: character})
   }
 
+  emitPayment(payment:any):void{
+    this.socket.emit('save-payment',{payment: payment})
+  }
+
   emitExit(): void {
     this.socket.emit('exit');
   }
@@ -33,4 +37,7 @@ export class WebSocketService {
     return this.socket.fromEvent<any[]>('users-online');
   }
 
+  getPayments(): Observable<any[]> {
+    return this.socket.fromEvent<any[]>('get-payments');
+  }
 }

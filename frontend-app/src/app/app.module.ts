@@ -12,6 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GridComponent } from './components/grid/grid.component';
 
+import { CurrencyMaskModule } from "ng2-currency-mask";
+
 const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
 
 @NgModule({
@@ -27,6 +29,7 @@ const config: SocketIoConfig = { url: 'http://localhost:5000', options: {} };
     SocketIoModule.forRoot(config),
     HttpClientModule,
     FormsModule,
+    CurrencyMaskModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
