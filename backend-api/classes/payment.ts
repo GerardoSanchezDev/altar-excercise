@@ -2,7 +2,7 @@ import { GridItem } from "../interfaces/grid-item";
 import { PaymentElement } from "../interfaces/payment-element";
 
 export class Payment{
-    private static paymentList: PaymentElement[] = [];
+    private static paymentList: any[] = [];
   
     private constructor() {}
   
@@ -10,7 +10,7 @@ export class Payment{
       return this.paymentList;
     }
   
-    public static addUser(payment: any) {
+    public static savePayment(payment: any) {
       this.paymentList.push(payment);
     }
 }

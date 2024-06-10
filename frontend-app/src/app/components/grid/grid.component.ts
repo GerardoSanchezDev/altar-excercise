@@ -3,7 +3,7 @@ import { WebSocketService } from 'src/app/services/web-socket.service';
 import { Observable } from 'rxjs/internal/Observable';
 import { concatMap, debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { Form, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-grid',
@@ -13,14 +13,25 @@ import { FormControl } from '@angular/forms';
 export class GridComponent {
 
   grid$!: Observable<any>;
+  payments$!: Observable<any>
   data:any={};
   generatorRunning:boolean=false
   biasCharacter = new FormControl('')
   mockArray:number[]=[0,1,2,3,4,5,6,7,8,9]
+  paymentList:any
+  formPayment: FormGroup = new FormGroup([])
 
   characterSubscription: Subscription = new Subscription;
 
-  constructor(private socket: WebSocketService) {}
+  constructor(
+    private socket: WebSocketService,
+    private fb: FormBuilder
+  ) {
+    this.formPayment=this.fb.group({
+      name: ['', [Validators.required]],
+      amount: ['', [Validators.required]]
+    })
+  }
 
   ngOnInit(): void {
     this.characterSubscription=this.biasCharacter.valueChanges.pipe(
@@ -29,6 +40,11 @@ export class GridComponent {
     ).subscribe(newCharacter=>{
       this.socket.emitBiasCharacter(newCharacter!)
     })
+    this.payments$ = this.socket
+      .getPayments()
+      .pipe(
+        map((payments)=>payments));  
+    
   }
 
   startGenerator(){
@@ -45,8 +61,16 @@ export class GridComponent {
     this.grid$=new Observable
   }
 
-  sendBias(){
-
+  sendPayment(){
+    let paymentObj = {
+      name: this.formPayment.get('name')!.value, 
+      amount: this.formPayment.get('amount')!.value,
+      code: this.data.secretCode,
+      grid: this.data.grid
+    }
+    this.socket.emitPayment(paymentObj)
+    this.formPayment.markAsPristine()
+    this.formPayment.reset()
   }
 
 
